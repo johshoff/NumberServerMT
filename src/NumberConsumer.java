@@ -71,10 +71,10 @@ public class NumberConsumer extends Thread {
                         duplicates++;
                     } else {
                         writer.println(number);
-                        //writer.flush();
                         valuesSeen.set(number);
                     }
                 }
+                //writer.flush();
 
                 counts.increment(buffer.size(), duplicates);
 

@@ -4,17 +4,15 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 
-public class ClientConnection extends Thread {
+public class ClientConnection implements Runnable {
 
     private Socket         socket;
     private BufferedReader inputStream;
     private NumberConsumer consumer;
-    private ListenerThread manager;
 
-    public ClientConnection(Socket socket, NumberConsumer consumer, ListenerThread manager) throws IOException {
+    public ClientConnection(Socket socket, NumberConsumer consumer) throws IOException {
         this.consumer = consumer;
         this.socket   = socket;
-        this.manager  = manager;
 
         inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
@@ -50,8 +48,6 @@ public class ClientConnection extends Thread {
             // illegal input
         } catch (InterruptedException e) {
         } finally {
-            manager.clients.remove(this);
-
             try {
                 socket.close();
             } catch (IOException e) {
@@ -69,6 +65,6 @@ public class ClientConnection extends Thread {
         } catch (IOException e) {
             // acceptable, for the same reason as in ListenerThread.end()
         }
-        interrupt();
+        Thread.currentThread().interrupt();
     }
 }

@@ -1,31 +1,23 @@
 
-public class ConsoleLogger extends Thread {
+public class ConsoleLogger implements Runnable {
 
     static final int REPORT_INTERVAL_MS = 10*1000;
 
     private NumberConsumer consumer;
+    private long lastTotal      = 0;
+    private long lastDuplicates = 0;
 
     public ConsoleLogger(NumberConsumer consumer) {
         this.consumer = consumer;
     }
 
     public void run() {
-        long lastTotal      = 0;
-        long lastDuplicates = 0;
+        SynchronizedCounter counts = consumer.counts.getCopy();
 
-        try {
-            while (true) {
-                Thread.sleep(REPORT_INTERVAL_MS);
-                SynchronizedCounter counts = consumer.counts.getCopy();
+        System.out.println("received "+(counts.total - lastTotal)+" numbers, "+(counts.duplicates - lastDuplicates)+" duplicates");
 
-                System.out.println("received "+(counts.total - lastTotal)+" numbers, "+(counts.duplicates - lastDuplicates)+" duplicates");
-
-                lastDuplicates = counts.duplicates;
-                lastTotal      = counts.total;
-            }
-        }
-        catch (InterruptedException e) {
-        }
+        lastDuplicates = counts.duplicates;
+        lastTotal      = counts.total;
     }
 
 }

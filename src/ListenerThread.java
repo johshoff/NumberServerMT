@@ -2,43 +2,33 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class ListenerThread extends Thread {
     static final int MAX_CLIENTS = 5;
 
-    public List<ClientConnection> clients;
-
-    private NumberConsumer consumer;
-    private ServerSocket   server;
+    private NumberConsumer  consumer;
+    private ServerSocket    server;
+    private ExecutorService threadPool;
 
     public ListenerThread(int port, NumberConsumer consumer) throws IOException
     {
         this.consumer = consumer;
-        clients = Collections.synchronizedList(new ArrayList<ClientConnection>());
         server = new ServerSocket(port);
+        threadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
     }
 
     public void run() {
         try {
             while (true) {
                 Socket client = server.accept();
-
-                if (clients.size() >= MAX_CLIENTS)
-                {
-                    client.close();
-                    continue;
-                }
-
-                ClientConnection clientThread = new ClientConnection(client, consumer, this);
-                clients.add(clientThread);
-                clientThread.start();
+                threadPool.execute(new ClientConnection(client, consumer));
             }
         } catch (SocketException e) {
-            // probably caused by the main thread calling end()
+            // for the purposes of this exercise, this is caused by the
+            // main thread calling end()
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -46,8 +36,7 @@ public class ListenerThread extends Thread {
             // (during normal operation, the consumer is already closing)
             consumer.interrupt();
 
-            for (ClientConnection client : clients)
-                client.end();
+            threadPool.shutdownNow();
         }
     }
 
