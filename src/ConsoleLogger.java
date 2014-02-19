@@ -1,8 +1,6 @@
 
 public class ConsoleLogger implements Runnable {
 
-    static final int REPORT_INTERVAL_MS = 10*1000;
-
     private NumberConsumer consumer;
     private long lastTotal      = 0;
     private long lastDuplicates = 0;

@@ -10,7 +10,7 @@ public class NumberServerMT {
         consumer.start();
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(new ConsoleLogger(consumer), 1, 10, SECONDS);
+        scheduler.scheduleAtFixedRate(new ConsoleLogger(consumer), 1, 10,SECONDS);
 
         ListenerThread listener = new ListenerThread(4000, consumer);
         listener.start();

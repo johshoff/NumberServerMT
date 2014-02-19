@@ -26,8 +26,7 @@ public class ClientConnection implements Runnable {
                 if (line == null)
                     break;
 
-                if (line.equals("terminate"))
-                {
+                if (line.equals("terminate")) {
                     consumer.interrupt();
                     break;
                 }
@@ -37,7 +36,7 @@ public class ClientConnection implements Runnable {
 
                 int number = Integer.parseInt(line);
 
-                if (number <= 0) // illegal input
+                if (number < 0) // illegal input
                     break;
 
                 consumer.newNumber(number);

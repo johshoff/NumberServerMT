@@ -20,7 +20,7 @@ public class NumberConsumer extends Thread {
         writer     = new PrintWriter(filename);
         valuesSeen = new BitSet();
 
-        // make sure we have enough memory right of the bat
+        // make sure we have enough memory right off the bat
         try {
             valuesSeen.set  (999999999);
             valuesSeen.clear(999999999);
@@ -34,7 +34,7 @@ public class NumberConsumer extends Thread {
      * @param number to be processed later
      */
     public synchronized void newNumber(int number) throws InterruptedException {
-        // the queue should get very big with only five clients,
+        // the queue shouldn't get very big with only five clients,
         // but just in case, I've added an upper limit.
         while (unhandledNumbers.size() > 200000) {
             System.out.println("Queue full");
